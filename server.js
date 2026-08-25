@@ -23,10 +23,13 @@ app.get("/", (req, res) => {
   console.log("This is the base route for Mikrotik Service");
   return res
     .status(200)
-    .json({ success: true, message: "This is the base route for the mikrotik api" });
+    .json({
+      success: true,
+      message: "This is the base route for the mikrotik api",
+    });
 });
 
-app.use("/api/v1/ppp", pppRouter);
+app.use("/api/v1/user", pppRouter);
 
 app.use(ErrorMiddleware);
 

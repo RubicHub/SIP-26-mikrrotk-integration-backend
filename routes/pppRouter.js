@@ -15,23 +15,23 @@ import {
   getAllPPPSecrets,
 } from "../controllers/PPP.js";
 
-const pppRouter = Router();
+const userRouter = Router();
 
-pppRouter.get("/secret", getAllPPPSecrets);
-pppRouter.get("/secret/:username", findPPPSecret);
-pppRouter.post("/secret", createPPPSecret);
-pppRouter.patch("/secret/:username", editPPPSecret);
-pppRouter.delete("/secret/:username", deletePPPSecret);
+userRouter.get("/user", getAllPPPSecrets);
+userRouter.get("/user/:username", findPPPSecret);
+userRouter.post("/user", createPPPSecret);
+userRouter.patch("/user/:username", editPPPSecret);
+userRouter.delete("/user/:username", deletePPPSecret);
 
-pppRouter.patch("/secret/:username/enable", enableConnection);
-pppRouter.patch("/secret/:username/disable", disableConnection);
+userRouter.patch("/user/:username/enable", enableConnection);
+userRouter.patch("/user/:username/disable", disableConnection);
 
-pppRouter.delete("/active/:username", disconnectActiveByUsername);
+userRouter.delete("/active/:username", disconnectActiveByUsername);
 
-pppRouter.get("/profile", getAllPPPprofiles);
-pppRouter.get("/profile/:name", findPPPprofile);
-pppRouter.post("/profile", createPPPprofile);
-pppRouter.patch("/profile/:name", editPPPprofile);
-pppRouter.delete("/profile/:name", deletePPPprofile);
+userRouter.get("/profile", getAllPPPprofiles);
+userRouter.get("/profile/:name", findPPPprofile);
+userRouter.post("/profile", createPPPprofile);
+userRouter.patch("/profile/:name", editPPPprofile);
+userRouter.delete("/profile/:name", deletePPPprofile);
 
-export default pppRouter;
+export default userRouter;
