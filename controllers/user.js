@@ -81,20 +81,20 @@ export const createProfile = async (req, res, next) => {
     dataLimitBytes = null,
     validityDays = 30,
   } = req.body;
-  try {
-    const [dbResult] = await pool.query(
-      `INSERT INTO profiles (name, rate_limit, data_limit_bytes, validity_days) VALUES (?, ?, ?, ?)`,
-      [name, rateLimit, dataLimitBytes, validityDays],
-    );
 
+  try {
     const limitName = `${name}-limit`;
     const [rx, tx] = rateLimit.split("/");
+
     const limitPayload = {
       name: limitName,
       "rate-limit-rx": rx?.trim() || rateLimit,
       "rate-limit-tx": tx?.trim() || rx?.trim() || rateLimit,
     };
-    if (dataLimitBytes) limitPayload["transfer-limit"] = String(dataLimitBytes);
+
+    if (dataLimitBytes) {
+      limitPayload["transfer-limit"] = String(dataLimitBytes);
+    }
 
     await mtFetch("/user-manager/limitation", {
       method: "PUT",
@@ -104,16 +104,24 @@ export const createProfile = async (req, res, next) => {
     await mtFetch("/user-manager/profile", {
       method: "PUT",
       body: JSON.stringify({
-        name,
+        name: String(name),
         validity: `${validityDays}d`,
-        "starts-at": "first-auth",
+        "starts-when": "first-auth",
       }),
     });
 
     await mtFetch("/user-manager/profile-limitation", {
       method: "PUT",
-      body: JSON.stringify({ profile: name, limitation: limitName }),
+      body: JSON.stringify({
+        profile: String(name),
+        limitation: limitName,
+      }),
     });
+
+    const [dbResult] = await pool.query(
+      `INSERT INTO profiles (name, rate_limit, data_limit_bytes, validity_days) VALUES (?, ?, ?, ?)`,
+      [name, rateLimit, dataLimitBytes, validityDays],
+    );
 
     return res.status(201).json({
       success: true,
@@ -217,7 +225,6 @@ export const getAllSubscribers = async (req, res, next) => {
     return next(e);
   }
 };
-
 export const createSubscriber = async (req, res, next) => {
   const { username, password, profile_id } = req.body;
   try {
@@ -231,21 +238,28 @@ export const createSubscriber = async (req, res, next) => {
     }
     const profile = profiles[0];
 
+    await mtFetch("/user-manager/user", {
+      method: "PUT",
+      body: JSON.stringify({
+        name: username,
+        password: password,
+        group: "default",
+      }),
+    });
+
+    await mtFetch("/user-manager/user-profile", {
+      method: "PUT",
+      body: JSON.stringify({
+        user: username,
+        profile: String(profile.name),
+      }),
+    });
+
     const [dbResult] = await pool.query(
       `INSERT INTO subscribers (profile_id, username, password, starts_at, expires_at) 
        VALUES (?, ?, ?, NOW(), DATE_ADD(NOW(), INTERVAL ? DAY))`,
       [profile_id, username, password, profile.validity_days],
     );
-
-    await mtFetch("/user-manager/user", {
-      method: "PUT",
-      body: JSON.stringify({ name: username, password }),
-    });
-
-    await mtFetch("/user-manager/user-profile", {
-      method: "PUT",
-      body: JSON.stringify({ user: username, profile: profile.name }),
-    });
 
     return res.status(201).json({
       success: true,
