@@ -2,10 +2,11 @@ import express, { urlencoded } from "express";
 import dotenv from "dotenv";
 import cors from "cors";
 import userRouter from "./routes/userRouter.js";
-import { checkExpiry } from "./controllers/user.js";
+// import { checkExpiry } from "./controllers/user.js";
 import { ErrorMiddleware } from "./middleware/handleErrors.js";
 import pppRouter from "./routes/pppRouter.js";
 import routerData from "./routes/routerData.js";
+import testConnectionRouter from "./routes/testConnectionRouter.js";
 
 dotenv.config();
 
@@ -27,8 +28,9 @@ app.get("/api/v1", (req, res) => {
 });
 
 app.use("/api/v1", routerData);
-app.use("/api/v1", userRouter);
-app.use("/api/v1", pppRouter);
+app.use("/api/v1", testConnectionRouter);
+// app.use("/api/v1", userRouter);
+// app.use("/api/v1", pppRouter);
 
 app.use(ErrorMiddleware);
 

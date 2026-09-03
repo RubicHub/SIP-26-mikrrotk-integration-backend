@@ -1,8 +1,8 @@
 import { Router } from "express";
 import { testConnectionController } from "../controllers/test.js";
 
-const routerData = Router();
+const testConnectionRouter = Router();
 
-routerData.get("/test/post", testConnectionController);
+testConnectionRouter.post("/test/post", testConnectionController);
 
-export default routerData;
+export default testConnectionRouter;

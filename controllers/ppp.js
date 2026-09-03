@@ -1,5 +1,5 @@
 import { pool } from "../database/database.js";
-import { AUTH, ROUTEROS_BASE } from "../helper/helper.js";
+// import { AUTH, ROUTEROS_BASE } from "../helper/helper.js";
 
 async function getAllSecrets() {
   return mtFetch("/ppp/secret");

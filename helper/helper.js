@@ -1,18 +1,27 @@
 import dotenv from "dotenv";
 
 dotenv.config();
-
 export async function mtFetch(router, path, options = {}) {
   const { system_user, ip_address, password } = router;
   const AUTH = Buffer.from(`${system_user}:${password}`).toString("base64");
-  const result = await fetch(`http://${ip_address}/rest${path}`, {
+
+  const url = `http://${ip_address}/rest${path}`;
+  const headers = {
+    Authorization: `Basic ${AUTH}`,
+    "Content-Type": "application/json",
+    ...options.headers,
+  };
+
+  console.log("mtFetch URL:", url);
+  console.log("mtFetch headers:", headers);
+  console.log("mtFetch options:", options);
+  console.log("mtFetch AUTH decoded:", `${system_user}:${password}`);
+
+  const result = await fetch(url, {
     ...options,
-    headers: {
-      Authorization: `Basic ${AUTH}`,
-      "Content-Type": "application/json",
-      ...options.headers,
-    },
+    headers,
   });
+
   const data = result.status === 204 ? null : await result.json();
   if (!result.ok) {
     const err = new Error(data?.message || `RouterOS error (${result.status})`);
