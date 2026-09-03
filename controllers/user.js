@@ -1,24 +1,6 @@
 import { pool } from "../database/database.js";
 import { AUTH, ROUTEROS_BASE } from "../helper/helper.js";
 
-export async function mtFetch(path, options = {}) {
-  const res = await fetch(`${ROUTEROS_BASE}${path}`, {
-    ...options,
-    headers: {
-      Authorization: `Basic ${AUTH}`,
-      "Content-Type": "application/json",
-      ...options.headers,
-    },
-  });
-  if (res.status === 204) return null;
-  const data = await res.json();
-  if (!res.ok)
-    throw new Error(
-      data?.detail || data?.message || `RouterOS error (${res.status})`,
-    );
-  return data;
-}
-
 const ALLOWED_PROFILE_SORTS = [
   "name",
   "rate_limit",
